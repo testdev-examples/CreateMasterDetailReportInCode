@@ -2,17 +2,13 @@
 Imports DevExpress.XtraReports.UI
 
 Namespace CreateMasterDetailReportInCode
-    Friend NotInheritable Class Program
+	Friend Module Program
+		<STAThread>
+		Sub Main()
+			Dim report As XtraReport = ReportCreator.CreateReport()
 
-        Private Sub New()
-        End Sub
-
-        <STAThread> _
-        Shared Sub Main()
-            Dim report As XtraReport = ReportCreator.CreateReport()
-
-            Dim printTool As New ReportPrintTool(report)
-            printTool.ShowRibbonPreviewDialog()
-        End Sub
-    End Class
+			Dim printTool As New ReportPrintTool(report)
+			printTool.ShowRibbonPreviewDialog()
+		End Sub
+	End Module
 End Namespace

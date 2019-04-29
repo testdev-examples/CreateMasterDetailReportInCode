@@ -5,84 +5,84 @@ Imports DevExpress.XtraPrinting
 Imports DevExpress.XtraReports.UI
 
 Namespace CreateMasterDetailReportInCode
-    Public Class ReportCreator
-        Public Shared Function CreateReport() As XtraReport
-            Dim report As New XtraReport() With { _
-                .DataSource = CreateDataSource(), _
-                .DataMember = "Categories", _
-                .StyleSheet = { _
-                    New XRControlStyle() With { _
-                        .Name = "Title", _
-                        .Font = New Font("Tahoma", 20F, FontStyle.Bold), _
-                        .Padding = New PaddingInfo(2, 2, 0, 0) _
-                    }, _
-                    New XRControlStyle() With { _
-                        .Name = "Master", _
-                        .Font = New Font("Tahoma", 12F, FontStyle.Bold), _
-                        .TextAlignment = TextAlignment.BottomLeft, _
-                        .Padding = New PaddingInfo(2, 2, 0, 8) _
-                    }, _
-                    New XRControlStyle() With { _
-                        .Name = "Detail", _
-                        .Font = New Font("Tahoma", 9F), _
-                        .Padding = New PaddingInfo(2, 2, 0, 0) _
-                    } _
-                } _
-            }
-            ConfigureMasterReport(report)
+	Public Class ReportCreator
+		Public Shared Function CreateReport() As XtraReport
+			Dim report As New XtraReport() With {
+				.DataSource = CreateDataSource(),
+				.DataMember = "Categories",
+				.StyleSheet = {
+					New XRControlStyle() With {
+						.Name = "Title",
+						.Font = New Font("Tahoma", 20F, FontStyle.Bold),
+						.Padding = New PaddingInfo(2, 2, 0, 0)
+					},
+					New XRControlStyle() With {
+						.Name = "Master",
+						.Font = New Font("Tahoma", 12F, FontStyle.Bold),
+						.TextAlignment = TextAlignment.BottomLeft,
+						.Padding = New PaddingInfo(2, 2, 0, 8)
+					},
+					New XRControlStyle() With {
+						.Name = "Detail",
+						.Font = New Font("Tahoma", 9F),
+						.Padding = New PaddingInfo(2, 2, 0, 0)
+					}
+				}
+			}
+			ConfigureMasterReport(report)
 
-            Dim detailReportBand As New DetailReportBand() With { _
-                .DataSource = report.DataSource, _
-                .DataMember = "Categories.CategoriesProducts" _
-            }
-            report.Bands.Add(detailReportBand)
-            ConfigureDetailReport(detailReportBand)
+			Dim detailReportBand As New DetailReportBand() With {
+				.DataSource = report.DataSource,
+				.DataMember = "Categories.CategoriesProducts"
+			}
+			report.Bands.Add(detailReportBand)
+			ConfigureDetailReport(detailReportBand)
 
-            Return report
-        End Function
-        Private Shared Sub ConfigureMasterReport(ByVal report As XtraReportBase)
-            Dim reportHeaderBand As New ReportHeaderBand() With {.HeightF = 30}
-            Dim titleLabel As New XRLabel() With { _
-                .Text = "Products List", _
-                .BoundsF = New RectangleF(0, 0, 300, 30), _
-                .StyleName = "Title" _
-            }
-            reportHeaderBand.Controls.Add(titleLabel)
+			Return report
+		End Function
+		Private Shared Sub ConfigureMasterReport(ByVal report As XtraReportBase)
+			Dim reportHeaderBand As New ReportHeaderBand() With {.HeightF = 30}
+			Dim titleLabel As New XRLabel() With {
+				.Text = "Products List",
+				.BoundsF = New RectangleF(0, 0, 300, 30),
+				.StyleName = "Title"
+			}
+			reportHeaderBand.Controls.Add(titleLabel)
 
-            Dim detailBand As New DetailBand() With { _
-                .HeightF = 40, _
-                .KeepTogetherWithDetailReports = True _
-            }
-            Dim detailLabel As New XRLabel() With { _
-                .ExpressionBindings = { New ExpressionBinding("Text", "CategoryName") }, _
-                .BoundsF = New RectangleF(0, 0, 300, 40), _
-                .StyleName = "Master" _
-            }
-            detailBand.Controls.Add(detailLabel)
+			Dim detailBand As New DetailBand() With {
+				.HeightF = 40,
+				.KeepTogetherWithDetailReports = True
+			}
+			Dim detailLabel As New XRLabel() With {
+				.ExpressionBindings = { New ExpressionBinding("Text", "CategoryName") },
+				.BoundsF = New RectangleF(0, 0, 300, 40),
+				.StyleName = "Master"
+			}
+			detailBand.Controls.Add(detailLabel)
 
-            report.Bands.AddRange(New Band() { reportHeaderBand, detailBand })
-        End Sub
-        Private Shared Sub ConfigureDetailReport(ByVal report As XtraReportBase)
-            Dim detailBand As New DetailBand() With {.HeightF = 22}
-            Dim detailLabel As New XRLabel() With { _
-                .ExpressionBindings = { New ExpressionBinding("Text", "ProductName") }, _
-                .BoundsF = New RectangleF(0, 0, 300, 22), _
-                .StyleName = "Detail" _
-            }
-            detailBand.Controls.Add(detailLabel)
-            report.Bands.Add(detailBand)
-        End Sub
-        Private Shared Function CreateDataSource() As Object
-            Dim connectionParameters As New Access97ConnectionParameters("nwind.mdb", "", "")
-            Dim sqlDataSource As New SqlDataSource(connectionParameters)
+			report.Bands.AddRange(New Band() { reportHeaderBand, detailBand })
+		End Sub
+		Private Shared Sub ConfigureDetailReport(ByVal report As XtraReportBase)
+			Dim detailBand As New DetailBand() With {.HeightF = 22}
+			Dim detailLabel As New XRLabel() With {
+				.ExpressionBindings = { New ExpressionBinding("Text", "ProductName") },
+				.BoundsF = New RectangleF(0, 0, 300, 22),
+				.StyleName = "Detail"
+			}
+			detailBand.Controls.Add(detailLabel)
+			report.Bands.Add(detailBand)
+		End Sub
+		Private Shared Function CreateDataSource() As Object
+			Dim connectionParameters As New Access97ConnectionParameters("nwind.mdb", "", "")
+			Dim sqlDataSource As New SqlDataSource(connectionParameters)
 
-            Dim queryCategories As SelectQuery = SelectQueryFluentBuilder.AddTable("Categories").SelectAllColumnsFromTable().Build("Categories")
-            Dim queryProducts As SelectQuery = SelectQueryFluentBuilder.AddTable("Products").SelectAllColumnsFromTable().Build("Products")
-            sqlDataSource.Queries.AddRange(New SqlQuery() { queryCategories, queryProducts })
+			Dim queryCategories As SelectQuery = SelectQueryFluentBuilder.AddTable("Categories").SelectAllColumnsFromTable().Build("Categories")
+			Dim queryProducts As SelectQuery = SelectQueryFluentBuilder.AddTable("Products").SelectAllColumnsFromTable().Build("Products")
+			sqlDataSource.Queries.AddRange(New SqlQuery() { queryCategories, queryProducts })
 
-            sqlDataSource.Relations.Add("Categories", "Products", "CategoryID", "CategoryID")
+			sqlDataSource.Relations.Add("Categories", "Products", "CategoryID", "CategoryID")
 
-            Return sqlDataSource
-        End Function
-    End Class
+			Return sqlDataSource
+		End Function
+	End Class
 End Namespace
